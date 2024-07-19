@@ -3,10 +3,10 @@ setup();
 function setup() {
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d");
-    main_loop(context);
+    main_loop(canvas, context);
 }
 
-async function main_loop(context) {
+async function main_loop(canvas, context) {
     let frame = 0;
     let startTime = performance.now();
     const fpsElement = document.getElementById("fps");
@@ -16,21 +16,13 @@ async function main_loop(context) {
             console.error("Could not fetch image data");
         }
         else {
-            let xSize = response.headers.get("X-BB-xSize");
-            let ySize = response.headers.get("X-BB-ySize");
-            response.arrayBuffer().then(
+            let xSize = parseInt(response.headers.get("X-BB-xSize"));
+            let ySize = parseInt(response.headers.get("X-BB-ySize"));
+            canvas.width = xSize;
+            canvas.height = ySize
+            response.arrayBuffer().then (
                 (arrayBuffer) => {
-                    requestAnimationFrame(
-                        (number)=> {
-                            context.putImageData(new ImageData(
-                                new Uint8ClampedArray(arrayBuffer),
-                                parseInt(xSize),
-                                parseInt(ySize)),
-                                0,
-                                0
-                            );
-                        }
-                    );
+                    context.putImageData(new ImageData(new Uint8ClampedArray(arrayBuffer), xSize, ySize), 0, 0);
                 }
             );
         }
