@@ -18,7 +18,11 @@ async function main_loop(context) {
         else {
             response.arrayBuffer().then(
                 (arrayBuffer) => {
-                    context.putImageData(new ImageData(new Uint8ClampedArray(arrayBuffer), 800, 600), 0, 0);
+                    requestAnimationFrame(
+                        (number)=> {
+                            context.putImageData(new ImageData(new Uint8ClampedArray(arrayBuffer), 800, 600), 0, 0);
+                        }
+                    );
                 }
             );
         }
