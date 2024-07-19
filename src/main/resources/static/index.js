@@ -16,11 +16,19 @@ async function main_loop(context) {
             console.error("Could not fetch image data");
         }
         else {
+            let xSize = response.headers.get("X-BB-xSize");
+            let ySize = response.headers.get("X-BB-ySize");
             response.arrayBuffer().then(
                 (arrayBuffer) => {
                     requestAnimationFrame(
                         (number)=> {
-                            context.putImageData(new ImageData(new Uint8ClampedArray(arrayBuffer), 800, 600), 0, 0);
+                            context.putImageData(new ImageData(
+                                new Uint8ClampedArray(arrayBuffer),
+                                parseInt(xSize),
+                                parseInt(ySize)),
+                                0,
+                                0
+                            );
                         }
                     );
                 }
