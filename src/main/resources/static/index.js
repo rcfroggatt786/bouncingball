@@ -9,8 +9,8 @@ class MyRenderer {
     static xSize = 0;
     static ySize = 0;
     static arrayBuffer = null;
-    static finishedRender = false;
     static instance = null;
+    static lifetime = 0;
     constructor() {
         if(MyRenderer.instance == null) {
             MyRenderer.canvas = document.getElementById("canvas");
@@ -18,6 +18,15 @@ class MyRenderer {
             MyRenderer.instance = this;
         }
         return MyRenderer.instance;
+    }
+    static async refreshData() {
+        MyRenderer.response = await fetch("/api/v1");
+        MyRenderer.xSize = parseInt(MyRenderer.response.headers.get("X-BB-xSize"));
+        MyRenderer.ySize = parseInt(MyRenderer.response.headers.get("X-BB-ySize"));
+        MyRenderer.arrayBuffer = await MyRenderer.response.arrayBuffer();
+    }
+    static async startApp() {
+        MyRenderer.response = await fetch("/api/v1/start");
     }
     static async render(timestamp) {
         if(timestamp != MyRenderer.lastTimeStamp) {
@@ -31,33 +40,30 @@ class MyRenderer {
             MyRenderer.frame++;
             if(MyRenderer.frame == 60) {
                 let fps = 60000.0 / (timestamp - MyRenderer.startTime);
-                MyRenderer.fpsElement.innerHTML = `${fps.toFixed(2)} fps`;
+                MyRenderer.fpsElement.innerHTML = `${fps.toFixed(2)} fps (VSYNC on)`;
                 MyRenderer.startTime = timestamp;
                 MyRenderer.frame = 0;
+                MyRenderer.lifetime++;
+                if(MyRenderer.lifetime >= fps * 5 / 60) {
+                    await fetch("api/v1/start");
+                    MyRenderer.lifetime = 0;
+                }
             }
-            MyRenderer.finishedRender = true;
         }
         else requestAnimationFrame(MyRenderer.render);
     }
     static async startLoop() {
-        while(true) {
-            MyRenderer.response = await fetch("/api/v1");
-            MyRenderer.xSize = parseInt(MyRenderer.response.headers.get("X-BB-xSize"));
-            MyRenderer.ySize = parseInt(MyRenderer.response.headers.get("X-BB-ySize"));
-            MyRenderer.arrayBuffer = await MyRenderer.response.arrayBuffer();
-            MyRenderer.finishedRender = false;
-            requestAnimationFrame(MyRenderer.render);
-            while (!MyRenderer.finishedRender) {
-                await new Promise(handler => setTimeout(handler, 1));
-            }
+        for(;;) {
+            await MyRenderer.refreshData();
+            MyRenderer.render(MyRenderer.lastTimeStamp);
         }
     }
-
 }
 
-function setup() {
+async function setup() {
     const renderer = new MyRenderer();
-    MyRenderer.startLoop();
+    await MyRenderer.startApp();
+    await MyRenderer.startLoop();
 }
 
-setup();
+await setup();
