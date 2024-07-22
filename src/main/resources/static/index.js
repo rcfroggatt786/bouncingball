@@ -47,9 +47,12 @@ class MyRenderer {
             MyRenderer.arrayBuffer = await MyRenderer.response.arrayBuffer();
             MyRenderer.finishedRender = false;
             requestAnimationFrame(MyRenderer.render);
-            //while(!MyRenderer.finishedRender) {}
+            while (!MyRenderer.finishedRender) {
+                await new Promise(handler => setTimeout(handler, 1));
+            }
         }
     }
+
 }
 
 function setup() {
