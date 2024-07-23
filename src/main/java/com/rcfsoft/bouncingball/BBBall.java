@@ -12,12 +12,12 @@ public class BBBall {
     double vx;
     double vy;
     double ax = 0.0;
-    double ay = 0.25;
+    double ay = 0.1;
     BBBall() {
         Random random = new Random();
         x = BB.X_SIZE / 2;
         y = BB.Y_SIZE / 3;
-        double v = random.nextDouble(11.0);
+        double v = random.nextDouble(6.0);
         double theta = random.nextDouble(2 * Math.PI);
         vx = v * Math.cos(theta);
         vy = v * Math.sin(theta);
