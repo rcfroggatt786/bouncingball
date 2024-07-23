@@ -16,9 +16,11 @@ public class BBBall {
     BBBall() {
         Random random = new Random();
         x = BB.X_SIZE / 2;
-        y = BB.Y_SIZE / 2;
-        vx = random.nextDouble(11.0) - 5.0;
-        vy = random.nextDouble(11.0) - 15.0;
+        y = BB.Y_SIZE / 3;
+        double v = random.nextDouble(11.0);
+        double theta = random.nextDouble(2 * Math.PI);
+        vx = v * Math.cos(theta);
+        vy = v * Math.sin(theta);
     }
     public void delta() {
         vx = vx + ax;
