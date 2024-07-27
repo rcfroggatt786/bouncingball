@@ -5,6 +5,7 @@ public class BBGfx {
     public static final byte[] byteBuffer = new byte[bufferSize];
     private static final byte[] backgroundBuffer = initBackground();
     private static final BBBall[] ball = new BBBall[BB.NUM_BALLS];
+
     private static byte[] initBackground() {
         byte[] backBuffer = new byte[bufferSize];
         for(int y = 0, offset = 0; y < BB.Y_SIZE; y++) {
