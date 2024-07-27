@@ -11,6 +11,7 @@ class MyRenderer {
     static arrayBuffer = null;
     static instance = null;
     static lifetime = 0;
+
     constructor() {
         if(MyRenderer.instance == null) {
             MyRenderer.canvas = document.getElementById("canvas");
